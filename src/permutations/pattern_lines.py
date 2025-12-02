@@ -1,21 +1,22 @@
 import numpy as np
 from colorama import Fore, Style
-from numba import int8
+from numba import bool_, boolean, int8, types
 from numba.experimental import jitclass
 
 spec = [
     ("count", int8),
     ("color", int8),
-    ("potential_colors", int8[:]),
+    ("potential_colors", types.Array(boolean, 1, "C")),
 ]
 
 
 @jitclass(spec)  # type: ignore
 class PatternLine:
-    def __init__(self) -> None:
+    def __init__(self):
         self.count = 0
         self.color = -1
-        self.potential_colors = np.arange(5, dtype=np.int8)
+        # Must allocate array inside __init__
+        self.potential_colors = np.ones(5, dtype=np.bool_)
 
     def copy(self):
         new_obj = PatternLine()

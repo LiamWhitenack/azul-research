@@ -1,6 +1,6 @@
 import numpy as np
 
-from permutations.pattern_lines import PatternLines
+from src.permutations.pattern_lines import PatternLine, PatternLines
 
 
 def all_placements(input: PatternLines) -> list[PatternLines]:
@@ -12,25 +12,26 @@ def all_placements(input: PatternLines) -> list[PatternLines]:
 def arrange_tiles(
     res: list[PatternLines],
     pattern: PatternLines,
-    colors: np.ndarray = np.ones(5, dtype=np.bool_),  # instead of set(range(5))
+    colors: np.ndarray = np.ones(5, dtype=np.bool_),  # available colors
     m: int = 0,
 ) -> None:
-    line = pattern[m]
+    line: PatternLine = pattern[m]
 
-    # line.potential_colors is an array of int8 (e.g., [0,1,2,3,4])
-    # Create mask: True where color is allowed by line AND still available
-    compatible_colors = np.zeros(5, dtype=np.bool_)
-    compatible_colors[line.potential_colors] = True
-    compatible_colors &= colors  # elementwise AND, replaces set.union
+    # potential_colors is already a boolean mask now
+    compatible_colors = line.potential_colors & colors
 
-    # While any color is still compatible
+    # If a color is already chosen, restrict to only that color
+    if line.color != -1:
+        forced_mask = np.zeros(5, dtype=np.bool_)
+        forced_mask[line.color] = compatible_colors[line.color]
+        compatible_colors = forced_mask
+
     while compatible_colors.any():
         pattern_copy = pattern.copy()
         line_copy = line.copy()
 
-        # Pick one available color (equivalent to popping from a set)
         chosen_color = int(np.argmax(compatible_colors))
-        compatible_colors[chosen_color] = False  # remove it
+        compatible_colors[chosen_color] = False  # remove choice
 
         line_copy.color = chosen_color
         line_copy.count += 2
@@ -39,7 +40,6 @@ def arrange_tiles(
         if m == 4:
             res.append(pattern_copy)
         else:
-            # Copy color mask for recursion
             colors_copy = colors.copy()
             colors_copy[chosen_color] = False
             arrange_tiles(res, pattern_copy, colors_copy, m + 1)

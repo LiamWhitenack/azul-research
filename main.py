@@ -1,12 +1,9 @@
 import numpy as np
 
-from src.permutations import PatternLine, all_placements, patternline_repr
+from src.permutations.all_scores import get_all_scores
+from src.permutations.arrangements import all_placements
+from src.permutations.pattern_lines import PatternLine
+from src.utils import print_pattern_grid
 
-
-def print_pattern_grid(grid):
-    for row in grid:
-        print(" ".join(patternline_repr(pl) for pl in row))
-    print()
-
-
-print_pattern_grid(all_placements([PatternLine() for _ in range(5)]))
+scores = get_all_scores()
+pass
