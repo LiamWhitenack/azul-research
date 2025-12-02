@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 WallType = Annotated[NDArray[np.bool_], (5, 5)]
 
 
-def score(wall: WallType, m: int, n: int) -> int:
+def score_placement(wall: np.ndarray, m: int, n: int) -> int:
     if wall[m, n]:
         raise Exception("A piece has already been placed in that position!")
     score_row, score_column = False, False
@@ -36,3 +36,17 @@ def score(wall: WallType, m: int, n: int) -> int:
         points += 1
 
     return points
+
+
+def endgame_scoring(wall: WallType) -> int:
+    res = 0
+    for m in range(5):
+        if all(wall[m, n] for n in range(5)):
+            res += 2
+    for n in range(5):
+        if all(wall[m, n] for m in range(5)):
+            res += 7
+    for n in range(5):
+        if all(wall[(i) % 5, (n + i) % 5] for i in range(5)):
+            res += 10
+    return res
