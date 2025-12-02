@@ -5,7 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "colorama>=0.4.6",
     "numba>=0.62.1",
     "pytest>=9.0.1",
     "ruff>=0.14.7",
 ]
+
+[tool.mypy]
+# general settings
+ignore_missing_imports = true
+
+[tool.mypy."numba.*"]
+ignore_missing_imports = true
