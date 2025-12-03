@@ -6,7 +6,7 @@ import numpy as np
 
 from azul.permutations.all_scores import get_all_scores
 from azul.permutations.arrangements import all_placements
-from azul.permutations.pattern_lines import TestingPatternLine
+from azul.permutations.pattern_lines import NumbaPatternLine
 from azul.pickle_progression import save_progression
 from azul.view_progression import (
     make_grids,

@@ -1,5 +1,5 @@
 from azul.permutations.arrangements import all_placements
-from azul.permutations.pattern_lines import PatternLines, TestingPatternLine
+from azul.permutations.pattern_lines import NumbaPatternLine, PatternLines
 from azul.permutations.resolve_placement import resolve_placement
 from azul.score import score_endgame
 from azul.types import GameProgression, WallType
@@ -10,7 +10,7 @@ from azul.wall import empty_wall
 @timed
 def get_all_scores(
     starting_score: int = 0,
-    path: list[PatternLines] = [[TestingPatternLine() for _ in range(5)]],
+    path: list[PatternLines] = [[NumbaPatternLine() for _ in range(5)]],
     wall: WallType = empty_wall(),
     n_rounds: int = 5,
 ) -> list[GameProgression]:

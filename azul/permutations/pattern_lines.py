@@ -45,10 +45,10 @@ class TestingPatternLine:
         return new
 
 
-PatternLines = list[TestingPatternLine]
+PatternLines = list[NumbaPatternLine]
 
 
-def patternline_repr(pl: TestingPatternLine) -> str:
+def patternline_repr(pl: NumbaPatternLine) -> str:
     if pl.color == -1:
         color_str = f"{Style.DIM}[none]{Style.RESET_ALL}"
     else:

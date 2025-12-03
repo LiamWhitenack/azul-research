@@ -1,6 +1,6 @@
 import numpy as np
 
-from azul.permutations.pattern_lines import PatternLines, TestingPatternLine
+from azul.permutations.pattern_lines import NumbaPatternLine, PatternLines
 
 
 def all_placements(input: PatternLines) -> list[PatternLines]:
@@ -15,7 +15,7 @@ def arrange_tiles(
     colors: np.ndarray = np.ones(5, dtype=np.bool_),  # available colors
     m: int = 0,
 ) -> None:
-    line: TestingPatternLine = pattern[m]
+    line: NumbaPatternLine = pattern[m]
 
     if pattern[4].color != -1:
         pass
