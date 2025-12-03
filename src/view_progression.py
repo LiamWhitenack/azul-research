@@ -1,6 +1,8 @@
 from colorama import Fore, Style, init
 
+from src.score import score_placement
 from src.types import GameProgression, WallType
+from src.wall import empty_wall
 
 init(autoreset=True)
 
@@ -40,6 +42,7 @@ def make_grids(
     res: list[list[list[str]]] = []
     labels: list[tuple[int, int]] = []
     grid = empty_grid()
+    wall: WallType = empty_wall()
     score = 0
 
     for grid_idx, (previous_step, step) in enumerate(
@@ -73,14 +76,17 @@ def make_grids(
             for n in range(5):
                 if n == color and place_tile:
                     cell = colored("X", COLORS[(color - m) % 5], bold=True)
+                    score += score_placement(wall, m, n)
+                    wall[m, n] = True  # update wall
                 else:
                     cell = grid[m][n + 1]
+
                 row_cells.append(cell)
 
             grid[m] = row_cells
 
         res.append(grid)
-        labels.append((grid_idx + 1, grid_idx + 1))  # both labels = grid number
+        labels.append((score, grid_idx))
 
     return res, labels
 
@@ -95,7 +101,6 @@ def print_grids(
 ) -> None:
     if not grids:
         return
-    print("\n")
 
     num_rows = len(grids[0])
 

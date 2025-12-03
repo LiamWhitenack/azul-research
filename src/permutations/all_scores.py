@@ -27,7 +27,9 @@ def get_all_scores(
         for pattern_lines in all_placements(path[-1]):
             unfinished.append(
                 resolve_placement(
-                    score=score, path=path + [pattern_lines], wall=wall.copy()
+                    score=score,
+                    path=path + [[line.copy() for line in pattern_lines]],
+                    wall=wall.copy(),
                 )
             )
 
