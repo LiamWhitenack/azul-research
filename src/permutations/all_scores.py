@@ -12,13 +12,13 @@ def get_all_scores(
     starting_score: int = 0,
     path: list[PatternLines] = [[TestingPatternLine() for _ in range(5)]],
     wall: WallType = empty_wall(),
-    n_rounds: int = 6,
+    n_rounds: int = 5,
 ) -> list[GameProgression]:
     res: list[GameProgression] = []
     unfinished: list[GameProgression] = [(starting_score, path, wall)]
     while unfinished:
         score, path, wall = unfinished.pop(0)
-        if len(path) == n_rounds:
+        if len(path) == n_rounds + 1:
             score += score_endgame(wall)
             res.append((score, path, wall))
             continue

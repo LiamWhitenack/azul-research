@@ -7,23 +7,16 @@ from src.permutations.arrangements import all_placements
 from src.permutations.pattern_lines import TestingPatternLine
 from src.pickle_path import save_progression
 from src.utils import print_pattern_grid
-from src.view_progression import make_grid, print_grids
-
-g1 = make_grid(1)
-g2 = make_grid(2)
-g3 = make_grid(3)
-g4 = make_grid(4)
-g5 = make_grid(5)
-
-print("\n--- SIDE BY SIDE ---")
-print_grids([g1, g2, g3, g4, g5], orientation="horizontal")
+from src.view_progression import make_grids, print_grids
 
 experiment = "2 by 5 nullable when necessary"
 start = perf_counter()
-scores = get_all_scores()
+scores = get_all_scores(n_rounds=5)
+best_progression = min(scores, key=lambda x: x[0])
 
+print_grids(make_grids(best_progression), orientation="horizontal")
 save_progression(
-    max(scores, key=lambda x: x[0]),
+    best_progression,
     f"pickles/{experiment}_{round(perf_counter() - start, 3)}".replace(
         ".", "_"
     ).replace(" ", "_")

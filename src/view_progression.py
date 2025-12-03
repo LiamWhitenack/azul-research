@@ -1,8 +1,10 @@
 from colorama import Fore, Style, init
 
+from src.types import GameProgression, WallType
+
 init(autoreset=True)
 
-COLORS = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA]
+COLORS = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.WHITE]
 
 
 def colored(text: str, color: str, bold: bool = False) -> str:
@@ -11,37 +13,68 @@ def colored(text: str, color: str, bold: bool = False) -> str:
     return color + text + Style.RESET_ALL
 
 
-# ---------------------------------------------------------
-# 1) Create a single 5×6 grid for a given step
-# ---------------------------------------------------------
-def make_grid(step: int):
-    """
-    Returns a 5×6 grid (list of list of strings).
-    Column 0 displays f"{step}/{row}" in bold with row-based color.
-    Columns 1–5 form the 5×5 square block with dynamic colored X's.
-    """
-    grid = []
+def unbold_grid(grid: list[list[str]]) -> list[list[str]]:
+    bold_code = Style.BRIGHT
 
-    for row in range(5):
-        # Left column (index 0)
-        color = COLORS[row % len(COLORS)]
-        left = colored(f"{step}/{row}", color, bold=True)
-
-        # Right 5 columns
-        row_cells = [left]
-        for col in range(5):
-            # Example progression: fill X only in top-left k×k
-            if col <= step - 1 and row <= step - 1:
-                is_bold = (step + row + col) % 2 == 0
-                cell_color = COLORS[(row + col) % len(COLORS)]
-                cell = colored("X", cell_color, bold=is_bold)
+    new_grid = []
+    for row in grid.copy():
+        new_row = []
+        for cell in row:
+            if isinstance(cell, str):
+                new_row.append(cell.replace(bold_code, ""))
             else:
-                cell = " "
-            row_cells.append(cell)
+                new_row.append(cell)
+        new_grid.append(new_row)
 
-        grid.append(row_cells)
+    return new_grid
 
-    return grid
+
+def empty_grid() -> list[list[str]]:
+    return [[" " for _ in range(6)] for _ in range(5)]
+
+
+def make_grids(progression: GameProgression) -> list[list[list[str]]]:
+    res: list[list[list[str]]] = []
+    grid = empty_grid()
+
+    for previous_step, step in zip(progression[1], progression[1][1:]):
+        grid = unbold_grid(grid)
+
+        for m, (previous_line, pattern_line) in enumerate(zip(previous_step, step)):
+            if pattern_line.color >= 0:
+                color = pattern_line.color
+                count = pattern_line.count
+                place_tile = False
+            if pattern_line.color == -1:
+                color_avail = zip(
+                    previous_line.potential_colors, pattern_line.potential_colors
+                )
+                color = next((i for i, (p, c) in enumerate(color_avail) if p != c), -1)
+                if color != -1:
+                    count = m + 1
+                    place_tile = True
+                else:
+                    color = -1
+                    place_tile = False
+
+            left = colored(f"{count}/{m + 1}", color=COLORS[color], bold=True)
+
+            # Right 5 columns
+            row_cells = [left]
+            for n in range(5):
+                if n == color and place_tile:
+                    cell = colored("X", COLORS[color], bold=True)
+                else:
+                    cell = grid[m][n + 1]
+                row_cells.append(cell)
+
+            # Replace row in-place instead of growing the grid
+            grid[m] = row_cells
+
+        # Save a copy of the grid for this step
+        res.append(grid)
+
+    return res
 
 
 # ---------------------------------------------------------
