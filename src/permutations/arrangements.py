@@ -29,6 +29,13 @@ def arrange_tiles(
         forced_mask[line.color] = compatible_colors[line.color]
         compatible_colors = forced_mask
 
+    if not compatible_colors.any():
+        if m == 4:
+            res.append(pattern.copy())
+        else:
+            arrange_tiles(res, pattern, colors, m + 1)
+        return
+
     while compatible_colors.any():
         pattern_copy = pattern.copy()
         line_copy = line.copy()
