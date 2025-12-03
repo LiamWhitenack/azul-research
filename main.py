@@ -18,9 +18,6 @@ g5 = make_grid(5)
 print("\n--- SIDE BY SIDE ---")
 print_grids([g1, g2, g3, g4, g5], orientation="horizontal")
 
-print("\n--- VERTICAL ---")
-print_grids([g1, g2, g3, g4, g5], orientation="vertical")
-
 experiment = "2 by 5 nullable when necessary"
 start = perf_counter()
 scores = get_all_scores()
