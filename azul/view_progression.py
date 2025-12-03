@@ -3,9 +3,9 @@ from typing import Literal
 
 from colorama import Fore, Style, init
 
-from src.score import score_placement
-from src.types import GameProgression, WallType
-from src.wall import empty_wall
+from azul.score import score_placement
+from azul.types import GameProgression, WallType
+from azul.wall import empty_wall
 
 init(autoreset=True)
 

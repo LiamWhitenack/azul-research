@@ -2,12 +2,11 @@ from time import perf_counter
 
 import numpy as np
 
-from src.permutations.all_scores import get_all_scores
-from src.permutations.arrangements import all_placements
-from src.permutations.pattern_lines import TestingPatternLine
-from src.pickle_progression import save_progression
-from src.utils import print_pattern_grid
-from src.view_progression import (
+from azul.permutations.all_scores import get_all_scores
+from azul.permutations.arrangements import all_placements
+from azul.permutations.pattern_lines import TestingPatternLine
+from azul.pickle_progression import save_progression
+from azul.view_progression import (
     make_grids,
     styled_grid_progression,
 )

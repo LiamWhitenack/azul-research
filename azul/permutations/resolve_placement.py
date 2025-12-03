@@ -1,8 +1,8 @@
 import numpy as np
 
-from src.permutations.pattern_lines import PatternLines, TestingPatternLine
-from src.score import score_placement
-from src.types import WallType
+from azul.permutations.pattern_lines import PatternLines, TestingPatternLine
+from azul.score import score_placement
+from azul.types import WallType
 
 
 def resolve_placement(

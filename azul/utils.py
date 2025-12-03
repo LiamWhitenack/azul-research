@@ -1,7 +1,7 @@
 import time
 from functools import wraps
 
-from src.permutations.pattern_lines import patternline_repr
+from azul.permutations.pattern_lines import patternline_repr
 
 
 def print_pattern_grid(grid):

@@ -1,6 +1,6 @@
 import pytest
 
-from src.score import score_endgame, score_placement
+from azul.score import score_endgame, score_placement
 from test.cases.endgame_scoring import ENDGAME_SCORING_TEST_CASES
 from test.cases.placement_scoring import PLACEMENT_SCORING_TEST_CASES
 from test.dataclasses import ScoreEndgameTestCase, ScorePlacementTestCase

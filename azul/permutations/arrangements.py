@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.permutations.pattern_lines import PatternLines, TestingPatternLine
+from azul.permutations.pattern_lines import PatternLines, TestingPatternLine
 
 
 def all_placements(input: PatternLines) -> list[PatternLines]:

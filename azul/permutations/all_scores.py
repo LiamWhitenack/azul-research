@@ -1,10 +1,10 @@
-from src.permutations.arrangements import all_placements
-from src.permutations.pattern_lines import PatternLines, TestingPatternLine
-from src.permutations.resolve_placement import resolve_placement
-from src.score import score_endgame
-from src.types import GameProgression, WallType
-from src.utils import timed
-from src.wall import empty_wall
+from azul.permutations.arrangements import all_placements
+from azul.permutations.pattern_lines import PatternLines, TestingPatternLine
+from azul.permutations.resolve_placement import resolve_placement
+from azul.score import score_endgame
+from azul.types import GameProgression, WallType
+from azul.utils import timed
+from azul.wall import empty_wall
 
 
 @timed

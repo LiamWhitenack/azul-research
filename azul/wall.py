@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.types import WallType
+from azul.types import WallType
 
 
 def empty_wall() -> WallType:

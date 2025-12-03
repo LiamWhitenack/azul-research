@@ -2,8 +2,8 @@ import pickle
 from pathlib import Path
 from typing import TypeVar
 
-from src.permutations.pattern_lines import PatternLines
-from src.types import GameProgression, WallType
+from azul.permutations.pattern_lines import PatternLines
+from azul.types import GameProgression, WallType
 
 T = TypeVar("T")
 
