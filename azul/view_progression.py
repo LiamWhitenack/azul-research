@@ -49,30 +49,47 @@ def empty_grid() -> list[list[str]]:
     return [[" " for _ in range(6)] for _ in range(5)]
 
 
+LINE_SIZE = 7  # count, color, 5 potential colors
+
+
 def make_grids(
     progression: GameProgression,
-    style_function: Callable[[str, int, bool], str] = colored,
+    style_function: Callable[[str, int, bool], str] = lambda s, c, p: s,
 ) -> tuple[list[list[list[str]]], list[str]]:
+    """
+    Convert a progression of patterns into display grids with optional styling.
+    progression: tuple(score, path, wall)
+    Each pattern in path is a 5x7 np.ndarray.
+    """
     res: list[list[list[str]]] = []
     labels: list[str] = []
     grid = empty_grid()
-    wall: WallType = empty_wall()
+    wall: np.ndarray = empty_wall()
     score = 0
 
+    # Iterate over consecutive patterns in the path
     for grid_idx, (previous_step, step) in enumerate(
         zip(progression[1], progression[1][1:])
     ):
         grid = mark_placements_stale(grid)
 
         for m, (previous_line, pattern_line) in enumerate(zip(previous_step, step)):
-            if pattern_line.color >= 0:
-                color = pattern_line.color
-                count = pattern_line.count
+            count = 0
+            place_tile = False
+            color = -1
+
+            # Extract values from numpy arrays
+            line_color = pattern_line[1]
+            line_count = pattern_line[0]
+
+            if line_color >= 0:
+                # Tile was already placed
+                color = line_color
+                count = line_count
                 place_tile = False
-            elif pattern_line.color == -1:
-                color_avail = zip(
-                    previous_line.potential_colors, pattern_line.potential_colors
-                )
+            else:
+                # Determine which color changed from previous to current
+                color_avail = zip(previous_line[2:], pattern_line[2:])
                 color = next((i for i, (p, c) in enumerate(color_avail) if p != c), -1)
                 if color != -1:
                     count = m + 1
@@ -81,7 +98,10 @@ def make_grids(
                     color = -1
                     place_tile = False
 
-            left = style_function(f"{count}/{m + 1}", (color - m) % 5, place_tile)
+            # Left cell: "count / m+1"
+            left = style_function(
+                f"{count}/{m + 1}", (color - m) % 5 if color >= 0 else 0, place_tile
+            )
 
             # Right 5 columns
             row_cells = [left]
@@ -89,7 +109,7 @@ def make_grids(
                 if n == color and place_tile:
                     cell = style_function("X", (color - m) % 5, True)
                     score += score_placement(wall, m, n)
-                    wall[m, n] = True  # update wall
+                    wall[m, n] = True
                 else:
                     cell = grid[m][n + 1]
 

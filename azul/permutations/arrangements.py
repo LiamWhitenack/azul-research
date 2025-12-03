@@ -1,55 +1,74 @@
+from __future__ import annotations
+
 import numpy as np
+from numba import njit
+from numba.typed import List
 
-from azul.permutations.pattern_lines import NumbaPatternLine, PatternLines
-
-
-def all_placements(input: PatternLines) -> list[PatternLines]:
-    placements: list[PatternLines] = []
-    arrange_tiles(placements, input)
-    return placements
+LINE_SIZE = 7  # count, color, 5 potential colors
 
 
-def arrange_tiles(
-    res: list[PatternLines],
-    pattern: PatternLines,
-    colors: np.ndarray = np.ones(5, dtype=np.bool_),  # available colors
-    m: int = 0,
-) -> None:
-    line: NumbaPatternLine = pattern[m]
+@njit
+def make_line():
+    line = np.zeros(LINE_SIZE, dtype=np.int8)
+    line[0] = 0  # count
+    line[1] = -1  # color
+    line[2:] = 1  # potential colors
+    return line
 
-    if pattern[4].color != -1:
-        pass
 
-    # potential_colors is already a boolean mask now
-    compatible_colors = line.potential_colors & colors
+@njit
+def copy_line(line):
+    return line.copy()
 
-    # If a color is already chosen, restrict to only that color
-    if line.color != -1:
-        forced_mask = np.zeros(5, dtype=np.bool_)
-        forced_mask[line.color] = compatible_colors[line.color]
+
+@njit
+def copy_pattern(pattern):
+    new_pattern = np.zeros_like(pattern)
+    for i in range(pattern.shape[0]):
+        new_pattern[i, :] = copy_line(pattern[i, :])
+    return new_pattern
+
+
+@njit
+def arrange_tiles(res, pattern, colors, m=0):
+    line = pattern[m, :]
+    compatible_colors = line[2:] & colors
+
+    if line[1] != -1:
+        forced_mask = np.zeros(5, dtype=np.int8)
+        forced_mask[line[1]] = compatible_colors[line[1]]
         compatible_colors = forced_mask
 
     if not compatible_colors.any():
         if m == 4:
-            res.append(pattern.copy())
+            res.append(copy_pattern(pattern))
         else:
             arrange_tiles(res, pattern, colors, m + 1)
         return
 
     while compatible_colors.any():
-        pattern_copy = pattern.copy()
-        line_copy = line.copy()
+        pattern_copy = copy_pattern(pattern)
+        line_copy = copy_line(line)
 
         chosen_color = int(np.argmax(compatible_colors))
-        compatible_colors[chosen_color] = False  # remove choice
+        compatible_colors[chosen_color] = 0
 
-        line_copy.color = chosen_color
-        line_copy.count += 2
-        pattern_copy[m] = line_copy
+        line_copy[1] = chosen_color
+        line_copy[0] += 2
+        pattern_copy[m, :] = line_copy
 
         if m == 4:
             res.append(pattern_copy)
         else:
             colors_copy = colors.copy()
-            colors_copy[chosen_color] = False
+            colors_copy[chosen_color] = 0
             arrange_tiles(res, pattern_copy, np.roll(colors_copy, 1), m + 1)
+
+
+@njit
+def all_placements(input_pattern):
+    res = List()
+    for _ in range(0):  # placeholder to set type
+        res.append(np.zeros((5, LINE_SIZE), dtype=np.int8))
+    arrange_tiles(res, input_pattern, np.ones(5, dtype=np.int8), 0)
+    return res
