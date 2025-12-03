@@ -2,19 +2,22 @@ from time import perf_counter
 
 import numpy as np
 
-from pickle_path import save_progression
 from src.permutations.all_scores import get_all_scores
 from src.permutations.arrangements import all_placements
 from src.permutations.pattern_lines import TestingPatternLine
+from src.pickle_path import save_progression
 from src.utils import print_pattern_grid
 
-experiment = "perfect_score"
+experiment = "2 by 5 nullable when necessary"
 start = perf_counter()
 scores = get_all_scores()
 
 
 save_progression(
     max(scores, key=lambda x: x[0]),
-    f"{experiment}_{perf_counter() - start}".replace(".", "_") + ".pkl",
+    f"pickles/{experiment}_{round(perf_counter() - start, 3)}".replace(
+        ".", "_"
+    ).replace(" ", "_")
+    + ".pkl",
 )
 pass

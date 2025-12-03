@@ -1,6 +1,6 @@
 import pytest
 
-from src.score import endgame_scoring, score_placement
+from src.score import score_endgame, score_placement
 from test.cases.endgame_scoring import ENDGAME_SCORING_TEST_CASES
 from test.cases.placement_scoring import PLACEMENT_SCORING_TEST_CASES
 from test.dataclasses import ScoreEndgameTestCase, ScorePlacementTestCase
@@ -22,5 +22,5 @@ def test_placement_scoring(case: ScorePlacementTestCase):
     ids=[c.id for c in ENDGAME_SCORING_TEST_CASES],
 )
 def test_endgame_scoring(case: ScoreEndgameTestCase):
-    result = endgame_scoring(case.wall)
+    result = score_endgame(case.wall)
     assert result == case.expected, f"{case.id}: expected {case.expected}, got {result}"

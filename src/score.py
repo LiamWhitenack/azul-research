@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.wall import WallType
+from src.types import WallType
 
 
 def score_placement(wall: np.ndarray, m: int, n: int) -> int:
@@ -35,7 +35,7 @@ def score_placement(wall: np.ndarray, m: int, n: int) -> int:
     return points
 
 
-def endgame_scoring(wall: WallType) -> int:
+def score_endgame(wall: WallType) -> int:
     res = 0
     for m in range(5):
         if all(wall[m, n] for n in range(5)):

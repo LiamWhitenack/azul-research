@@ -1,9 +1,6 @@
-from typing import Annotated
-
 import numpy as np
-from numpy.typing import NDArray
 
-WallType = Annotated[NDArray[np.bool_], (5, 5)]
+from src.types import WallType
 
 
 def empty_wall() -> WallType:

@@ -1,6 +1,6 @@
 from src.permutations.pattern_lines import PatternLines, TestingPatternLine
 from src.score import score_placement
-from src.wall import WallType
+from src.types import WallType
 
 
 def resolve_placement(

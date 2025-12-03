@@ -3,13 +3,13 @@ from pathlib import Path
 from typing import TypeVar
 
 from src.permutations.pattern_lines import PatternLines
-from src.wall import WallType
+from src.types import GameProgression, WallType
 
 T = TypeVar("T")
 
 
 def save_progression(
-    progression: tuple[int, list[PatternLines], WallType],
+    progression: GameProgression,
     path: str | Path,
     protocol: int = pickle.HIGHEST_PROTOCOL,
 ) -> None:
@@ -18,7 +18,7 @@ def save_progression(
         pickle.dump(progression, f, protocol=protocol)
 
 
-def load_progression(path: str | Path) -> tuple[int, list[PatternLines], WallType]:
+def load_progression(path: str | Path) -> GameProgression:
     path = Path(path)
     with path.open("rb") as f:
         return pickle.load(f)
