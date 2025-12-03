@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from colorama import Fore, Style
 from numba import bool_, boolean, int8, types
@@ -11,25 +13,42 @@ spec = [
 
 
 @jitclass(spec)  # type: ignore
-class PatternLine:
+class NumbaPatternLine:
     def __init__(self):
         self.count = 0
         self.color = -1
         # Must allocate array inside __init__
         self.potential_colors = np.ones(5, dtype=np.bool_)
 
-    def copy(self):
-        new_obj = PatternLine()
+    def copy(self) -> NumbaPatternLine:
+        new_obj = NumbaPatternLine()
         new_obj.count = self.count
         new_obj.color = self.color
         new_obj.potential_colors = self.potential_colors.copy()
         return new_obj
 
 
-PatternLines = list[PatternLine]
+class TestingPatternLine:
+    def __init__(self) -> None:
+        self.count = 0
+        self.color = -1
+        self.potential_colors = [True for _ in range(5)]
+
+    def __repr__(self) -> str:
+        return f"TestingPatternLine(count={self.count}, color={self.color}, potential_colors={','.join([str(i) for i, color in enumerate(self.potential_colors) if color])})"
+
+    def copy(self) -> TestingPatternLine:
+        new = TestingPatternLine()
+        new.count = self.count
+        new.color = self.color
+        new.potential_colors = self.potential_colors.copy()
+        return new
 
 
-def patternline_repr(pl: PatternLine) -> str:
+PatternLines = list[TestingPatternLine]
+
+
+def patternline_repr(pl: TestingPatternLine) -> str:
     if pl.color == -1:
         color_str = f"{Style.DIM}[none]{Style.RESET_ALL}"
     else:

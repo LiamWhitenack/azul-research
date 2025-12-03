@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.permutations.pattern_lines import PatternLine, PatternLines
+from src.permutations.pattern_lines import PatternLines, TestingPatternLine
 
 
 def all_placements(input: PatternLines) -> list[PatternLines]:
@@ -15,7 +15,10 @@ def arrange_tiles(
     colors: np.ndarray = np.ones(5, dtype=np.bool_),  # available colors
     m: int = 0,
 ) -> None:
-    line: PatternLine = pattern[m]
+    line: TestingPatternLine = pattern[m]
+
+    if pattern[4].color != -1:
+        pass
 
     # potential_colors is already a boolean mask now
     compatible_colors = line.potential_colors & colors
