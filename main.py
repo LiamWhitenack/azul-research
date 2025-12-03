@@ -11,10 +11,10 @@ from src.view_progression import make_grids, print_grids
 
 experiment = "2 by 5 nullable when necessary"
 start = perf_counter()
-scores = get_all_scores(n_rounds=5)
-best_progression = min(scores, key=lambda x: x[0])
+scores = get_all_scores(n_rounds=4)
+best_progression = max(reversed(scores), key=lambda x: x[0])
 
-print_grids(make_grids(best_progression), orientation="horizontal")
+print_grids(*make_grids(best_progression))
 save_progression(
     best_progression,
     f"pickles/{experiment}_{round(perf_counter() - start, 3)}".replace(

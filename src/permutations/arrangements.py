@@ -52,4 +52,4 @@ def arrange_tiles(
         else:
             colors_copy = colors.copy()
             colors_copy[chosen_color] = False
-            arrange_tiles(res, pattern_copy, colors_copy, m + 1)
+            arrange_tiles(res, pattern_copy, np.roll(colors_copy, 1), m + 1)
