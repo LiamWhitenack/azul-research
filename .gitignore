@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 pickles/*
 !pickles/.gitignore
+test.md
 
 # C extensions
 *.so

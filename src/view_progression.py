@@ -1,3 +1,6 @@
+from collections.abc import Callable
+from typing import Literal
+
 from colorama import Fore, Style, init
 
 from src.score import score_placement
@@ -9,10 +12,20 @@ init(autoreset=True)
 COLORS = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.WHITE]
 
 
-def colored(text: str, color: str, bold: bool = False) -> str:
+def colored(text: str, color_idx: int, bold: bool = False) -> str:
     if bold:
-        return Style.BRIGHT + color + text + Style.RESET_ALL
-    return color + text + Style.RESET_ALL
+        return Style.BRIGHT + COLORS[color_idx] + text + Style.RESET_ALL
+    return COLORS[color_idx] + text + Style.RESET_ALL
+
+
+MARKDOWN_COLOR_CLASSES = ["red", "green", "blue", "orange", "purple", "black"]
+
+
+def md_color(text: str, color_idx: int, bold: bool = False) -> str:
+    color_class = MARKDOWN_COLOR_CLASSES[color_idx % len(MARKDOWN_COLOR_CLASSES)]
+    if bold:
+        return f'<span class="{color_class}" style="font-weight:bold;">{text}</span>'
+    return f'<span class="{color_class}">{text}</span>'
 
 
 def mark_placements_stale(grid: list[list[str]]) -> list[list[str]]:
@@ -38,9 +51,10 @@ def empty_grid() -> list[list[str]]:
 
 def make_grids(
     progression: GameProgression,
-) -> tuple[list[list[list[str]]], list[tuple[int, int]]]:
+    style_function: Callable[[str, int, bool], str] = colored,
+) -> tuple[list[list[list[str]]], list[str]]:
     res: list[list[list[str]]] = []
-    labels: list[tuple[int, int]] = []
+    labels: list[str] = []
     grid = empty_grid()
     wall: WallType = empty_wall()
     score = 0
@@ -67,15 +81,13 @@ def make_grids(
                     color = -1
                     place_tile = False
 
-            left = colored(
-                f"{count}/{m + 1}", color=COLORS[(color - m) % 5], bold=place_tile
-            )
+            left = style_function(f"{count}/{m + 1}", (color - m) % 5, place_tile)
 
             # Right 5 columns
             row_cells = [left]
             for n in range(5):
                 if n == color and place_tile:
-                    cell = colored("X", COLORS[(color - m) % 5], bold=True)
+                    cell = style_function("X", (color - m) % 5, True)
                     score += score_placement(wall, m, n)
                     wall[m, n] = True  # update wall
                 else:
@@ -86,7 +98,7 @@ def make_grids(
             grid[m] = row_cells
 
         res.append(grid)
-        labels.append((score, grid_idx))
+        labels.append(str(score))
 
     return res, labels
 
@@ -95,31 +107,74 @@ GRID_WIDTH = 13  # width of each grid (cells + left number column)
 GRID_SPACING = 1  # spaces between grids
 
 
-def print_grids(
-    grids: list[list[list[str]]],
-    grid_labels: list[tuple[int, int]],  # two numbers per grid
-) -> None:
+def styled_grid_progression(
+    progression: GameProgression, style: Literal["print", "markdown"] = "print"
+) -> str:
+    use_markdown = style == "markdown"
+    grids, labels = make_grids(progression, colored if not use_markdown else md_color)
+
     if not grids:
-        return
+        return ""
 
     num_rows = len(grids[0])
+    out: list[str] = []
 
-    # Print the labels above each grid
-    label_line = []
-    for label in grid_labels:
-        label_str = f"{label[0]},{label[1]}"
-        # center the label within the fixed grid width
-        label_line.append(label_str.center(GRID_WIDTH))
-    print((" " * GRID_SPACING).join(label_line))
+    if not use_markdown:
+        # ───────────────────────────────
+        # PRINT MODE (unchanged)
+        # ───────────────────────────────
+        label_line = []
+        for label in labels:
+            label_line.append(label.center(GRID_WIDTH))
+        out.append((" " * GRID_SPACING).join(label_line))
+        out.append((" " * GRID_SPACING).join(["-" * GRID_WIDTH for _ in grids]))
 
-    # Print dividing line
-    print((" " * GRID_SPACING).join(["-" * GRID_WIDTH for _ in grids]))
+        for row_idx in range(num_rows):
+            parts = []
+            for grid in grids:
+                row_str = " ".join(grid[row_idx])
+                parts.append(row_str.ljust(GRID_WIDTH))
+            out.append((" " * GRID_SPACING).join(parts))
+        return "\n".join(out)
 
-    # Print each row of the grids
-    for row_idx in range(num_rows):
-        line_parts = []
-        for grid in grids:
-            row_str = " ".join(grid[row_idx])
-            # pad the row to the fixed width
-            line_parts.append(row_str.ljust(GRID_WIDTH))
-        print((" " * GRID_SPACING).join(line_parts))
+    # ───────────────────────────────
+    # MARKDOWN MODE (table output with CSS classes)
+    # ───────────────────────────────
+    # Add CSS style block at the top of output
+    # Also update the CSS block to include new colors
+    out.append(
+        "---\n"
+        "marp: true\n"
+        "theme: custom\n"
+        "<style>\n"
+        ".red { color: red; }\n"
+        ".green { color: green; }\n"
+        ".blue { color: blue; }\n"
+        ".orange { color: orange; }\n"
+        ".purple { color: purple; }\n"
+        ".black { color: black; }\n"
+        "td { width: 80px; text-align: center; }\n"
+        "</style>\n",
+    )
+
+    for grid_idx, grid in enumerate(grids):
+        label = labels[grid_idx]
+
+        out.append(f"### Step {grid_idx + 1} — Score: **{label}**\n")
+
+        # # header row (dummy, for alignment)
+        out.append("|  |  |  |  |  |  |")
+        out.append("|------|------|------|------|------|------|")
+
+        for r in range(num_rows):
+            # each cell uses span class and fixed width
+            row_cells = [
+                grid[r][c].replace("\n", "<br>") if grid[r][c].strip() else "&nbsp;"
+                for c in range(len(grid[r]))
+            ]
+            out.append("| " + " | ".join(row_cells) + " |")
+
+        out.append("")  # spacing after table
+        out.append("---\n")  # Marp slide separator
+
+    return "\n".join(out)
