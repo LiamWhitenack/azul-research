@@ -5,7 +5,7 @@ import numpy as np
 from src.permutations.all_scores import get_all_scores
 from src.permutations.arrangements import all_placements
 from src.permutations.pattern_lines import TestingPatternLine
-from src.pickle_path import save_progression
+from src.pickle_progression import save_progression
 from src.utils import print_pattern_grid
 from src.view_progression import (
     make_grids,
