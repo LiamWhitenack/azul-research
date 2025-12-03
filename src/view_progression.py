@@ -146,6 +146,7 @@ def styled_grid_progression(
         "---\n"
         "marp: true\n"
         "theme: custom\n"
+        "---\n"
         "<style>\n"
         ".red { color: red; }\n"
         ".green { color: green; }\n"
